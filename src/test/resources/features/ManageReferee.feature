@@ -8,9 +8,10 @@ Feature: Manage Referees
     And I login as "admin" with password "admin"
 
   Scenario: Create a referee
+    Given There is no referee with email "john@example.com"
     When I create a new referee with name "John Doe", email "john@example.com", phone "123456789" and expert "true"
     Then The response code is 201
-    And A referee with name "John Doe" and email "john@example.com" exists
+    And A referee with name "John Doe", email "john@example.com", phone "123456789" and expert "true" exists
 
   Scenario: Retrieve a referee
     Given There is no referee with email "read@example.com"

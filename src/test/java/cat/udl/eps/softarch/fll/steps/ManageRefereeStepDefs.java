@@ -111,6 +111,24 @@ public class ManageRefereeStepDefs {
 				.andExpect(jsonPath("$.emailAddress", is(email)));
 	}
 
+	@And("^A referee with name \"([^\"]*)\", email \"([^\"]*)\", phone \"([^\"]*)\" and expert \"([^\"]*)\" exists$")
+	public void aRefereeWithNameEmailPhoneAndExpertExists(String name, String email, String phone, String expert) {
+		Referee referee = findRefereeByEmail(email);
+		assertEquals(name, referee.getName());
+		assertEquals(email, referee.getEmailAddress());
+		assertEquals(phone, referee.getPhoneNumber());
+		assertEquals(Boolean.parseBoolean(expert), referee.isExpert());
+	}
+
+	@And("^The response contains referee name \"([^\"]*)\", email \"([^\"]*)\", phone \"([^\"]*)\" and expert \"([^\"]*)\"$")
+	public void theResponseContainsRefereeNameEmailPhoneAndExpert(String name, String email, String phone, String expert) throws Throwable {
+		stepDefs.result
+				.andExpect(jsonPath("$.name", is(name)))
+				.andExpect(jsonPath("$.emailAddress", is(email)))
+				.andExpect(jsonPath("$.phoneNumber", is(phone)))
+				.andExpect(jsonPath("$.expert", is(Boolean.parseBoolean(expert))));
+	}
+
 	@And("^The referee with email \"([^\"]*)\" is expert$")
 	public void theRefereeWithEmailIsExpert(String email) {
 		Referee referee = findRefereeByEmail(email);
