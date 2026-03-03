@@ -11,6 +11,6 @@ import cat.udl.eps.softarch.fll.domain.Referee;
 @Repository
 @RepositoryRestResource
 public interface RefereeRepository extends CrudRepository<Referee, Long>, PagingAndSortingRepository<Referee, Long> {
-
-    Optional<Referee> findByEmailAddress(@Param("email") String email);
+ 
+	Optional<Referee> findByEmailAddress(@Param("email") String email);
 }
