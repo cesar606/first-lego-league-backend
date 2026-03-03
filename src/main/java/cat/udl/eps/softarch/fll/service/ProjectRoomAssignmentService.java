@@ -12,58 +12,60 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProjectRoomAssignmentService {
-    
-    private final ProjectRoomRepository projectRoomRepository;
-    private final JudgeRepository judgeRepository;
 
-    public ProjectRoomAssignmentService(ProjectRoomRepository projectRoomRepository, JudgeRepository judgeRepository) {
-        this.projectRoomRepository = projectRoomRepository;
-        this.judgeRepository = judgeRepository;
-    }
+	private final ProjectRoomRepository projectRoomRepository;
+	private final JudgeRepository judgeRepository;
+
+	public ProjectRoomAssignmentService(ProjectRoomRepository projectRoomRepository, JudgeRepository judgeRepository) {
+		this.projectRoomRepository = projectRoomRepository;
+		this.judgeRepository = judgeRepository;
+	}
 
 	@Transactional
-    public AssignJudgeResponse assignJudge(AssignJudgeRequest request) {
-        
-        ProjectRoom room = projectRoomRepository.findById(request.roomId())
-                .orElseThrow(() -> new RoomAssignmentException("ROOM_NOT_FOUND", "Room not found"));
-                
-        Judge judge = judgeRepository.findById(Long.valueOf(request.judgeId()))
-                .orElseThrow(() -> new RoomAssignmentException("JUDGE_NOT_FOUND", "Judge not found"));
+	public AssignJudgeResponse assignJudge(AssignJudgeRequest request) {
+		ProjectRoom room = projectRoomRepository.findById(request.roomId())
+				.orElseThrow(() -> new RoomAssignmentException("ROOM_NOT_FOUND", "Room not found"));
 
-        boolean isAlreadyManager = room.getManagedByJudge() != null && room.getManagedByJudge().equals(judge);
-        boolean isAlreadyPanelist = room.getPanelists().contains(judge);
-        
-        if (isAlreadyManager || isAlreadyPanelist) {
-            throw new RoomAssignmentException("JUDGE_ALREADY_ASSIGNED", "This judge is already assigned to this room");
-        }
+		Judge judge = judgeRepository.findById(Long.valueOf(request.judgeId()))
+				.orElseThrow(() -> new RoomAssignmentException("JUDGE_NOT_FOUND", "Judge not found"));
 
-        String assignedRole;
+		boolean isAlreadyManager = room.getManagedByJudge() != null &&
+				room.getManagedByJudge().getId().equals(judge.getId());
 
-        if (request.isManager()) {
-            if (room.getManagedByJudge() != null) {
-                throw new RoomAssignmentException("ROOM_ALREADY_HAS_MANAGER", "This room already has a manager assigned");
-            }
-            room.setManagedByJudge(judge);
-            assignedRole = "MANAGER";
-            
-        } else {
-            if (room.getPanelists().size() >= 3) {
-                throw new RoomAssignmentException("MAX_PANELISTS_REACHED", "This room has reached the maximum of 3 panelists");
-            }
-            
-            judge.setMemberOfRoom(room);
-            room.getPanelists().add(judge);
-            assignedRole = "PANELIST";
-        }
+		boolean isAlreadyPanelist = room.getPanelists().stream()
+				.anyMatch(p -> p.getId().equals(judge.getId()));
 
-        projectRoomRepository.save(room);
-        judgeRepository.save(judge);
+		if (isAlreadyManager || isAlreadyPanelist) {
+			throw new RoomAssignmentException("JUDGE_ALREADY_ASSIGNED", "This judge is already assigned to this room");
+		}
 
-        return new AssignJudgeResponse(
-            request.roomId(),
-            request.judgeId(),
-            assignedRole,
-            "ASSIGNED"
-        );
-    }
+		String assignedRole;
+
+		if (request.isManager()) {
+			if (room.getManagedByJudge() != null) {
+				throw new RoomAssignmentException("ROOM_ALREADY_HAS_MANAGER",
+						"This room already has a manager assigned");
+			}
+			room.setManagedByJudge(judge);
+			assignedRole = "MANAGER";
+		} else {
+			if (room.getPanelists().size() >= 3) {
+				throw new RoomAssignmentException("MAX_PANELISTS_REACHED",
+						"This room has reached the maximum of 3 panelists");
+			}
+
+			judge.setMemberOfRoom(room);
+			room.getPanelists().add(judge);
+			assignedRole = "PANELIST";
+		}
+
+		projectRoomRepository.save(room);
+		judgeRepository.save(judge);
+
+		return new AssignJudgeResponse(
+				request.roomId(),
+				request.judgeId(),
+				assignedRole,
+				"ASSIGNED");
+	}
 }
