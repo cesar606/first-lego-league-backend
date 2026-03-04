@@ -38,10 +38,13 @@ public class Round extends UriEntity<Long> {
 	private List<Match> matches = new ArrayList<>();
 
 	public void setMatches(List<Match> matches) {
-		new ArrayList<>(this.matches).forEach(this::removeMatch);
-		if (matches != null) {
-			matches.forEach(this::addMatch);
+		if (matches == this.matches) {
+			return;
 		}
+
+		List<Match> incoming = (matches == null) ? List.of() : new ArrayList<>(matches);
+		new ArrayList<>(this.matches).forEach(this::removeMatch);
+		incoming.forEach(this::addMatch);
 	}
 
 	public void addMatch(Match match) {
