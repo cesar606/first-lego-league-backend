@@ -1,17 +1,20 @@
-package cat.udl.eps.softarch.demo.steps;
+package cat.udl.eps.softarch.fll.steps;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
-import cat.udl.eps.softarch.demo.domain.Floater;
-import cat.udl.eps.softarch.demo.domain.Match;
-import cat.udl.eps.softarch.demo.domain.MatchState;
-import cat.udl.eps.softarch.demo.domain.Referee;
-import cat.udl.eps.softarch.demo.repository.FloaterRepository;
-import cat.udl.eps.softarch.demo.repository.MatchRepository;
-import cat.udl.eps.softarch.demo.repository.RefereeRepository;
+import cat.udl.eps.softarch.fll.domain.Floater;
+import cat.udl.eps.softarch.fll.domain.Match;
+import cat.udl.eps.softarch.fll.domain.MatchState;
+import cat.udl.eps.softarch.fll.domain.Referee;
+import cat.udl.eps.softarch.fll.repository.FloaterRepository;
+import cat.udl.eps.softarch.fll.repository.MatchRepository;
+import cat.udl.eps.softarch.fll.repository.MatchResultRepository;
+import cat.udl.eps.softarch.fll.repository.RefereeRepository;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -23,6 +26,7 @@ public class MatchAssignmentStepDefs {
 	private final MatchRepository matchRepository;
 	private final RefereeRepository refereeRepository;
 	private final FloaterRepository floaterRepository;
+	private final MatchResultRepository matchResultRepository;
 
 	private Match currentMatch;
 	private Referee currentReferee;
@@ -34,15 +38,18 @@ public class MatchAssignmentStepDefs {
 			StepDefs stepDefs,
 			MatchRepository matchRepository,
 			RefereeRepository refereeRepository,
-			FloaterRepository floaterRepository) {
+			FloaterRepository floaterRepository,
+			MatchResultRepository matchResultRepository) {
 		this.stepDefs = stepDefs;
 		this.matchRepository = matchRepository;
 		this.refereeRepository = refereeRepository;
 		this.floaterRepository = floaterRepository;
+		this.matchResultRepository = matchResultRepository;
 	}
 
 	@Given("the match assignment system is empty")
 	public void clearMatchAssignmentSystem() {
+		matchResultRepository.deleteAll();
 		matchRepository.deleteAll();
 		floaterRepository.deleteAll();
 		refereeRepository.deleteAll();
@@ -53,13 +60,14 @@ public class MatchAssignmentStepDefs {
 		currentFloater = null;
 	}
 
-	@Given("a match with state {string} exists from {string} to {string}")
-	public void createMatch(String state, String startTime, String endTime) {
-		Match match = new Match();
-		match.setState(MatchState.valueOf(state));
-		match.setStartTime(LocalDateTime.parse(startTime));
-		match.setEndTime(LocalDateTime.parse(endTime));
-		currentMatch = matchRepository.save(match);
+	@Given("a scheduled match exists from {string} to {string}")
+	public void createScheduledMatch(String startTime, String endTime) {
+		currentMatch = createMatch(MatchState.SCHEDULED, startTime, endTime, null);
+	}
+
+	@Given("a finished match exists from {string} to {string}")
+	public void createFinishedMatch(String startTime, String endTime) {
+		currentMatch = createMatch(MatchState.FINISHED, startTime, endTime, null);
 	}
 
 	@Given("a referee volunteer exists")
@@ -93,24 +101,14 @@ public class MatchAssignmentStepDefs {
 		currentFloater = floaterRepository.save(floater);
 	}
 
-	@Given("a match with state {string} exists from {string} to {string} assigned to the first referee")
-	public void createMatchAssignedToFirstReferee(String state, String startTime, String endTime) {
-		Match match = new Match();
-		match.setState(MatchState.valueOf(state));
-		match.setStartTime(LocalDateTime.parse(startTime));
-		match.setEndTime(LocalDateTime.parse(endTime));
-		match.setReferee(firstReferee);
-		currentMatch = matchRepository.save(match);
+	@Given("a scheduled match exists from {string} to {string} assigned to the first referee")
+	public void createScheduledMatchAssignedToFirstReferee(String startTime, String endTime) {
+		currentMatch = createMatch(MatchState.SCHEDULED, startTime, endTime, firstReferee);
 	}
 
-	@Given("a match with state {string} exists from {string} to {string} assigned to the referee")
-	public void createMatchAssignedToReferee(String state, String startTime, String endTime) {
-		Match match = new Match();
-		match.setState(MatchState.valueOf(state));
-		match.setStartTime(LocalDateTime.parse(startTime));
-		match.setEndTime(LocalDateTime.parse(endTime));
-		match.setReferee(currentReferee);
-		matchRepository.save(match);
+	@Given("a scheduled match exists from {string} to {string} assigned to the referee")
+	public void createScheduledMatchAssignedToReferee(String startTime, String endTime) {
+		createMatch(MatchState.SCHEDULED, startTime, endTime, currentReferee);
 	}
 
 	@When("I assign that referee to that match")
@@ -138,7 +136,7 @@ public class MatchAssignmentStepDefs {
 		assign(currentMatch.getId().toString(), refereeId);
 	}
 
-	@Then("the assignment response status is {string}")
+	@Then("assignment response status is {string}")
 	public void verifyAssignmentStatus(String expectedStatus) throws Exception {
 		stepDefs.result.andExpect(jsonPath("$.status").value(expectedStatus));
 	}
@@ -148,12 +146,28 @@ public class MatchAssignmentStepDefs {
 		stepDefs.result.andExpect(jsonPath("$.error").value(expectedErrorCode));
 	}
 
+	@And("the match is assigned to that referee")
+	public void verifyMatchAssignedToReferee() {
+		Match persisted = matchRepository.findById(currentMatch.getId()).orElseThrow();
+		assertNotNull(persisted.getReferee());
+		assertEquals(currentReferee.getId(), persisted.getReferee().getId());
+	}
+
+	private Match createMatch(MatchState state, String startTime, String endTime, Referee referee) {
+		Match match = new Match();
+		match.setState(state);
+		match.setStartTime(LocalTime.parse(startTime));
+		match.setEndTime(LocalTime.parse(endTime));
+		match.setReferee(referee);
+		return matchRepository.save(match);
+	}
+
 	private void assign(String matchId, String refereeId) throws Exception {
 		JSONObject request = new JSONObject();
 		request.put("matchId", matchId);
 		request.put("refereeId", refereeId);
 		stepDefs.result = stepDefs.mockMvc.perform(
-				post("/match-assignments")
+				post("/matchAssignments/assign")
 						.with(AuthenticationStepDefs.authenticate())
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(request.toString())

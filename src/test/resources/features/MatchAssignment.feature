@@ -1,4 +1,7 @@
 Feature: Match referee assignment
+	As a tournament organizer
+	I want to assign referees to matches
+	So that assignments are valid and conflict-free
 
 	Background:
 		Given the match assignment system is empty
@@ -6,11 +9,12 @@ Feature: Match referee assignment
 		And I login as "user" with password "password"
 
 	Scenario: Assign referee to match successfully
-		Given a match with state "SCHEDULED" exists from "2026-03-01T10:00:00" to "2026-03-01T11:00:00"
+		Given a scheduled match exists from "10:00" to "11:00"
 		And a referee volunteer exists
 		When I assign that referee to that match
 		Then The response code is 200
-		And the assignment response status is "ASSIGNED"
+		And assignment response status is "ASSIGNED"
+		And the match is assigned to that referee
 
 	Scenario: Match not found
 		Given a referee volunteer exists
@@ -19,13 +23,13 @@ Feature: Match referee assignment
 		And assignment error code is "MATCH_NOT_FOUND"
 
 	Scenario: Referee not found
-		Given a match with state "SCHEDULED" exists from "2026-03-01T10:00:00" to "2026-03-01T11:00:00"
+		Given a scheduled match exists from "10:00" to "11:00"
 		When I assign referee id "99999" to that match
 		Then The response code is 404
 		And assignment error code is "REFEREE_NOT_FOUND"
 
 	Scenario: Invalid role
-		Given a match with state "SCHEDULED" exists from "2026-03-01T10:00:00" to "2026-03-01T11:00:00"
+		Given a scheduled match exists from "10:00" to "11:00"
 		And a floater volunteer exists
 		When I assign that floater to that match
 		Then The response code is 422
@@ -34,13 +38,13 @@ Feature: Match referee assignment
 	Scenario: Match already has referee
 		Given a referee volunteer exists
 		And another referee volunteer exists
-		And a match with state "SCHEDULED" exists from "2026-03-01T10:00:00" to "2026-03-01T11:00:00" assigned to the first referee
+		And a scheduled match exists from "10:00" to "11:00" assigned to the first referee
 		When I assign the second referee to that match
 		Then The response code is 409
 		And assignment error code is "MATCH_ALREADY_HAS_REFEREE"
 
 	Scenario: Invalid match state
-		Given a match with state "FINISHED" exists from "2026-03-01T10:00:00" to "2026-03-01T11:00:00"
+		Given a finished match exists from "10:00" to "11:00"
 		And a referee volunteer exists
 		When I assign that referee to that match
 		Then The response code is 422
@@ -48,8 +52,8 @@ Feature: Match referee assignment
 
 	Scenario: Availability conflict
 		Given a referee volunteer exists
-		And a match with state "SCHEDULED" exists from "2026-03-01T10:00:00" to "2026-03-01T11:00:00" assigned to the referee
-		And a match with state "SCHEDULED" exists from "2026-03-01T10:30:00" to "2026-03-01T11:30:00"
+		And a scheduled match exists from "10:00" to "11:00" assigned to the referee
+		And a scheduled match exists from "10:30" to "11:30"
 		When I assign that referee to that match
 		Then The response code is 409
 		And assignment error code is "AVAILABILITY_CONFLICT"
