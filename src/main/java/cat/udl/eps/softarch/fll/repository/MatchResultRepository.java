@@ -43,15 +43,15 @@ public interface MatchResultRepository extends JpaRepository<MatchResult, Long> 
 	List<MatchResult> findByTeam(@Param("team") Team team);
 
 	@RestResource(exported = false)
-	@Query(value = "select mr.team.id as teamId, "
+	@Query(value = "select mr.team.name as teamId, "
 			+ "mr.team.name as teamName, "
 			+ "sum(mr.score) as totalScore, "
 			+ "count(mr) as matchesPlayed "
 			+ "from MatchResult mr "
 			+ "where mr.match.round.edition.id = :editionId "
-			+ "group by mr.team.id, mr.team.name "
+			+ "group by mr.team.name "
 			+ "order by sum(mr.score) desc, count(mr) desc, mr.team.name asc",
-			countQuery = "select count(distinct mr.team.id) "
+			countQuery = "select count(distinct mr.team.name) "
 					+ "from MatchResult mr "
 					+ "where mr.match.round.edition.id = :editionId")
 	Page<LeaderboardRowProjection> findLeaderboardByEditionId(@Param("editionId") Long editionId, Pageable pageable);
