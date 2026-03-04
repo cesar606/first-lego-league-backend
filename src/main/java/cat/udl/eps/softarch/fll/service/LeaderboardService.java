@@ -29,7 +29,8 @@ public class LeaderboardService {
 					HttpStatus.BAD_REQUEST,
 					"Invalid pagination: page must be >= 0 and size must be between 1 and 100");
 		}
-		if (page > Integer.MAX_VALUE / size) {
+		long basePosition = (long) page * size;
+		if (basePosition + size > Integer.MAX_VALUE) {
 			throw new ResponseStatusException(
 					HttpStatus.BAD_REQUEST,
 					"Invalid pagination: page and size are too large");
@@ -42,7 +43,7 @@ public class LeaderboardService {
 		Page<LeaderboardRowProjection> resultPage = matchResultRepository.findLeaderboardByEditionId(
 				editionId, PageRequest.of(page, size));
 
-		List<LeaderboardItemResponse> items = mapItems(resultPage, page, size);
+		List<LeaderboardItemResponse> items = mapItems(resultPage, basePosition);
 
 		return new LeaderboardPageResponse(
 				editionId,
@@ -52,15 +53,15 @@ public class LeaderboardService {
 				items);
 	}
 
-	private List<LeaderboardItemResponse> mapItems(Page<LeaderboardRowProjection> resultPage, int page, int size) {
-		int basePosition = page * size;
+	private List<LeaderboardItemResponse> mapItems(Page<LeaderboardRowProjection> resultPage, long basePosition) {
 		List<LeaderboardRowProjection> rows = resultPage.getContent();
 
 		return java.util.stream.IntStream.range(0, rows.size())
 				.mapToObj(index -> {
 					LeaderboardRowProjection row = rows.get(index);
+					int position = Math.toIntExact(basePosition + index + 1L);
 					return new LeaderboardItemResponse(
-							basePosition + index + 1,
+							position,
 							row.getTeamId(),
 							row.getTeamName(),
 							row.getTotalScore(),

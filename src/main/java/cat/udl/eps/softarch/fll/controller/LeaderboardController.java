@@ -1,8 +1,13 @@
 package cat.udl.eps.softarch.fll.controller;
 
+import java.util.Map;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,11 +32,20 @@ public class LeaderboardController {
 	}
 
 	@GetMapping("/editions/{editionId}")
-	@Operation(summary = "Get leaderboard for a specific edition")
+	@Operation(summary = "Get leaderboard for a specific edition",
+			description = "Sorting is fixed to totalScore DESC, matchesPlayed DESC, teamName ASC.")
 	public LeaderboardPageResponse getEditionLeaderboard(
 			@Parameter(description = "Edition identifier") @PathVariable Long editionId,
 			@Parameter(description = "Page index (0-based)") @RequestParam(defaultValue = "0") @Min(0) int page,
-			@Parameter(description = "Page size") @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
+			@Parameter(description = "Page size") @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size,
+			@Parameter(description = "Optional query parameter for compatibility. Ignored because sorting is fixed.")
+			@RequestParam(required = false) String sort) {
 		return leaderboardService.getEditionLeaderboard(editionId, page, size);
+	}
+
+	@ExceptionHandler(ConstraintViolationException.class)
+	public ResponseEntity<Map<String, String>> handleConstraintViolation(ConstraintViolationException ex) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(Map.of("message", ex.getMessage()));
 	}
 }

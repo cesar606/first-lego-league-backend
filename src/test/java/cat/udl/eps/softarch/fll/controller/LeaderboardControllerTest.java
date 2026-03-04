@@ -1,6 +1,7 @@
 package cat.udl.eps.softarch.fll.controller;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -95,14 +96,11 @@ class LeaderboardControllerTest {
 
 	@Test
 	void getEditionLeaderboardReturnsBadRequestForInvalidPagination() throws Exception {
-		when(leaderboardService.getEditionLeaderboard(2025L, -1, 0))
-				.thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid pagination"));
-
 		mockMvc.perform(get("/leaderboards/editions/2025")
 				.param("page", "-1")
 				.param("size", "0")
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
-
+		verifyNoInteractions(leaderboardService);
 	}
 }

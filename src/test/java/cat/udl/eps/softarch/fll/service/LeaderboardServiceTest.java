@@ -67,6 +67,16 @@ class LeaderboardServiceTest {
 	}
 
 	@Test
+	void getEditionLeaderboardShouldThrowBadRequestWhenPaginationOverflowsWithSizeOne() {
+		ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+				() -> leaderboardService.getEditionLeaderboard(2025L, Integer.MAX_VALUE, 1));
+
+		assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+		verify(editionRepository, never()).existsById(any());
+		verify(matchResultRepository, never()).findLeaderboardByEditionId(any(), any());
+	}
+
+	@Test
 	void getEditionLeaderboardShouldReturnEmptyPageWhenEditionHasNoResults() {
 		when(editionRepository.existsById(2025L)).thenReturn(true);
 		Page<LeaderboardRowProjection> emptyPage = Page.empty(PageRequest.of(0, 10));
