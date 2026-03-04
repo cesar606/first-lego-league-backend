@@ -7,7 +7,7 @@ Feature: Judge search by name
     Given judges exist with names "John Smith" and "Alice Brown"
     When I search judges by name containing "john"
     Then The response code is 200
-    And the judges search response should contain 1 results
+    And the judges search response should contain 1 result
     And the judges search response should include judge named "John Smith"
 
   Scenario: Search returns empty list when no match (200)

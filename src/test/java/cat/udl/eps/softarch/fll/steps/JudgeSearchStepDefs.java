@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import java.util.UUID;
 import org.springframework.http.MediaType;
 import cat.udl.eps.softarch.fll.domain.Judge;
 import cat.udl.eps.softarch.fll.repository.JudgeRepository;
@@ -23,15 +24,18 @@ public class JudgeSearchStepDefs {
 
 	@Given("judges exist with names {string} and {string}")
 	public void judgesExistWithNames(String firstName, String secondName) {
+		judgeRepository.deleteAll();
+		String suffix = UUID.randomUUID().toString().substring(0, 8);
+
 		Judge firstJudge = new Judge();
 		firstJudge.setName(firstName);
-		firstJudge.setEmailAddress("judge.search.first@example.com");
+		firstJudge.setEmailAddress("judge.search.first." + suffix + "@example.com");
 		firstJudge.setPhoneNumber("111111111");
 		judgeRepository.save(firstJudge);
 
 		Judge secondJudge = new Judge();
 		secondJudge.setName(secondName);
-		secondJudge.setEmailAddress("judge.search.second@example.com");
+		secondJudge.setEmailAddress("judge.search.second." + suffix + "@example.com");
 		secondJudge.setPhoneNumber("222222222");
 		judgeRepository.save(secondJudge);
 	}
@@ -44,7 +48,7 @@ public class JudgeSearchStepDefs {
 				.andDo(print());
 	}
 
-	@And("the judges search response should contain {int} results")
+	@And("^the judges search response should contain (\\d+) result[s]?$")
 	public void judgesSearchResponseShouldContainCount(int expectedCount) throws Exception {
 		stepDefs.result.andExpect(jsonPath("$._embedded.judges.length()").value(expectedCount));
 	}
