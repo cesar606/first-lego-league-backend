@@ -8,6 +8,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -34,7 +35,7 @@ public class Round extends UriEntity<Long> {
 	@Column(unique = true)
 	private int number;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "edition_id")
 	private Edition edition;
 
@@ -58,13 +59,13 @@ public class Round extends UriEntity<Long> {
 			return;
 		}
 
-		if (this.matches.stream().anyMatch(m -> m == match)) {
+		if (this.matches.contains(match)) {
 			return;
 		}
 
 		Round previousRound = match.getRound();
 		if (previousRound != null && previousRound != this) {
-			previousRound.getMatches().removeIf(m -> m == match);
+			previousRound.getMatches().remove(match);
 		}
 
 		this.matches.add(match);
@@ -77,7 +78,7 @@ public class Round extends UriEntity<Long> {
 
 		}
 
-		if (this.matches.removeIf(m -> m == match)) {
+		if (this.matches.remove(match)) {
 			match.setRound(null);
 		}
 	}
