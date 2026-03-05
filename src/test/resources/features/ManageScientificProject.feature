@@ -41,7 +41,7 @@ Feature: Manage Scientific Project
         And There is a scientific project with score 70 and comments "Average work" for team "BetaTeam"
         When I search for scientific projects with minimum score 85
         Then The response code is 200
-        And The response contains 0 scientific project(s) No newline at end of file
+        And The response contains 0 scientific project(s)
 
     Scenario: Find scientific projects by team name
         Given There is a registered user with username "user" and password "password" and email "user@sample.app"
