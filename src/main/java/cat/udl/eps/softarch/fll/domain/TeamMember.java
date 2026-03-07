@@ -55,7 +55,9 @@ public class TeamMember extends UriEntity<Long> {
 
 	public static TeamMember create(String name, String role, LocalDate birthDate, Team team) {
 		DomainValidation.requireNonBlank(name, "name");
+		DomainValidation.requireLengthBetween(name, 2, 100, "name");
 		DomainValidation.requireNonBlank(role, "role");
+		DomainValidation.requireMaxLength(role, 50, "role");
 		DomainValidation.requirePast(birthDate, "birthDate");
 		DomainValidation.requireNonNull(team, "team");
 
