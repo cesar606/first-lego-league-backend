@@ -60,19 +60,21 @@ public class Team extends UriEntity<String> {
 	@Size(max = 10, message = "A team cannot have more than 10 members")
 	@ToString.Exclude
 	private List<TeamMember> members = new ArrayList<>();
-	@ManyToMany
-	@JoinTable(
+	`@ManyToMany`
+	`@JoinTable`(
 		name = "team_coach",
-		joinColumns = @JoinColumn(name = "team_name"),
-		inverseJoinColumns = @JoinColumn(name = "coach_id"))
-	@ToString.Exclude
+		joinColumns = `@JoinColumn`(name = "team_name"),
+		inverseJoinColumns = `@JoinColumn`(name = "coach_id"))
+	`@ToString.Exclude`
+	`@Setter`(AccessLevel.NONE)
 	private Set<Coach> trainedBy = new HashSet<>();
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(
+	`@ManyToMany`(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	`@JoinTable`(
 		name = "team_floaters",
-		joinColumns = @JoinColumn(name = "team_name"),
-		inverseJoinColumns = @JoinColumn(name = "floater_id"))
-	@ToString.Exclude
+		joinColumns = `@JoinColumn`(name = "team_name"),
+		inverseJoinColumns = `@JoinColumn`(name = "floater_id"))
+	`@ToString.Exclude`
+	`@Setter`(AccessLevel.NONE)
 	private Set<Floater> floaters = new HashSet<>();
 
 	public static Team create(String name, String city, Integer foundationYear, String category) {
