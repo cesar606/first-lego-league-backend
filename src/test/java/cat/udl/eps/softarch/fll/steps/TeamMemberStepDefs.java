@@ -41,6 +41,7 @@ public class TeamMemberStepDefs {
 	public void clearTeamMemberApiSystem() {
 		teamMemberRepository.deleteAll();
 		teamRepository.deleteAll();
+		stepDefs.result = null;
 		latestTeamMemberUri = null;
 		latestTeamMemberId = null;
 	}
@@ -178,6 +179,8 @@ public class TeamMemberStepDefs {
 	}
 
 	private void captureLatestTeamMemberIfCreated() throws Exception {
+		latestTeamMemberUri = null;
+		latestTeamMemberId = null;
 		if (stepDefs.result.andReturn().getResponse().getStatus() != 201) {
 			return;
 		}
