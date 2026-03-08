@@ -96,7 +96,7 @@ public class Team extends UriEntity<String> {
 	@ManyToMany
 	@JoinTable(
 			name = "team_edition",
-			joinColumns = @JoinColumn(name = "team_name"),
+			joinColumns = @JoinColumn(name = "team_name", referencedColumnName = "name"),
 			inverseJoinColumns = @JoinColumn(name = "edition_id"))
 	@JsonIdentityReference(alwaysAsId = true)
 	@ToString.Exclude

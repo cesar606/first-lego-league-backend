@@ -23,13 +23,15 @@ public class ScientificProjectEventHandler {
 
 	@HandleBeforeCreate
 	public void handleScientificProjectPreCreate(ScientificProject project) {
-		validateTeam(project);
-		validateEdition(project);
-		validateTeamEditionCompatibility(project);
+		validateProject(project);
 	}
 
 	@HandleBeforeSave
 	public void handleScientificProjectPreSave(ScientificProject project) {
+		validateProject(project);
+	}
+
+	private void validateProject(ScientificProject project) {
 		validateTeam(project);
 		validateEdition(project);
 		validateTeamEditionCompatibility(project);

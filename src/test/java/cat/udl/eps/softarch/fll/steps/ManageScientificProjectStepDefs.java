@@ -43,16 +43,14 @@ public class ManageScientificProjectStepDefs {
 			Integer score,
 			String comments,
 			String teamUri,
-			String editionUri,
-			boolean includeTeam,
-			boolean includeEdition) throws Exception {
+			String editionUri) throws Exception {
 		JSONObject payload = new JSONObject();
 		payload.put("score", score);
 		payload.put("comments", comments);
-		if (includeTeam) {
+		if (teamUri != null) {
 			payload.put("team", teamUri);
 		}
-		if (includeEdition) {
+		if (editionUri != null) {
 			payload.put("edition", editionUri);
 		}
 
@@ -148,7 +146,7 @@ public class ManageScientificProjectStepDefs {
 		String teamUri = ensureTeamExists(teamName);
 		String editionUri = createEdition();
 		registerTeamInEdition(teamUri, editionUri);
-		stepDefs.result = performCreateProject(score, comments, teamUri, editionUri, true, true);
+		stepDefs.result = performCreateProject(score, comments, teamUri, editionUri);
 		captureLatestProjectUriIfCreated();
 	}
 
@@ -156,7 +154,7 @@ public class ManageScientificProjectStepDefs {
 	public void iCreateScientificProjectWithoutTeamWithValidEdition(Integer score, String comments) throws Exception {
 		latestScientificProjectUri = null;
 		String editionUri = createEdition();
-		stepDefs.result = performCreateProject(score, comments, null, editionUri, false, true);
+		stepDefs.result = performCreateProject(score, comments, null, editionUri);
 		captureLatestProjectUriIfCreated();
 	}
 
@@ -164,7 +162,7 @@ public class ManageScientificProjectStepDefs {
 	public void iCreateScientificProjectWithoutEditionWithValidTeam(Integer score, String comments, String teamName) throws Exception {
 		latestScientificProjectUri = null;
 		String teamUri = ensureTeamExists(teamName);
-		stepDefs.result = performCreateProject(score, comments, teamUri, null, true, false);
+		stepDefs.result = performCreateProject(score, comments, teamUri, null);
 		captureLatestProjectUriIfCreated();
 	}
 
@@ -173,7 +171,7 @@ public class ManageScientificProjectStepDefs {
 		latestScientificProjectUri = null;
 		String editionUri = createEdition();
 		String invalidTeamUri = "non-existing-" + UUID.randomUUID();
-		stepDefs.result = performCreateProject(score, comments, invalidTeamUri, editionUri, true, true);
+		stepDefs.result = performCreateProject(score, comments, invalidTeamUri, editionUri);
 		captureLatestProjectUriIfCreated();
 	}
 
@@ -182,7 +180,7 @@ public class ManageScientificProjectStepDefs {
 		latestScientificProjectUri = null;
 		String teamUri = ensureTeamExists(teamName);
 		String invalidEditionUri = "non-existing-" + UUID.randomUUID();
-		stepDefs.result = performCreateProject(score, comments, teamUri, invalidEditionUri, true, true);
+		stepDefs.result = performCreateProject(score, comments, teamUri, invalidEditionUri);
 		captureLatestProjectUriIfCreated();
 	}
 
@@ -191,7 +189,7 @@ public class ManageScientificProjectStepDefs {
 		latestScientificProjectUri = null;
 		String teamUri = ensureTeamExists(teamName);
 		String editionUri = createEdition();
-		stepDefs.result = performCreateProject(score, comments, teamUri, editionUri, true, true);
+		stepDefs.result = performCreateProject(score, comments, teamUri, editionUri);
 		captureLatestProjectUriIfCreated();
 	}
 
@@ -200,18 +198,19 @@ public class ManageScientificProjectStepDefs {
 		String teamUri = ensureTeamExists(teamName);
 		String editionUri = createEdition();
 		registerTeamInEdition(teamUri, editionUri);
-		ResultActions createAction = performCreateProject(score, comments, teamUri, editionUri, true, true);
+		ResultActions createAction = performCreateProject(score, comments, teamUri, editionUri);
 		createAction.andExpect(status().isCreated());
 		latestScientificProjectUri = createAction.andReturn().getResponse().getHeader("Location");
 	}
 
 	@Given("There is a scientific project with score {int} and comments {string} for team {string} in a tracked edition")
 	public void thereIsAScientificProjectInATrackedEdition(Integer score, String comments, String teamName) throws Exception {
+		trackedEditionId = null;
 		String teamUri = ensureTeamExists(teamName);
 		String editionUri = createEdition();
 		registerTeamInEdition(teamUri, editionUri);
 		trackedEditionId = extractEditionId(editionUri);
-		ResultActions createAction = performCreateProject(score, comments, teamUri, editionUri, true, true);
+		ResultActions createAction = performCreateProject(score, comments, teamUri, editionUri);
 		createAction.andExpect(status().isCreated());
 		latestScientificProjectUri = createAction.andReturn().getResponse().getHeader("Location");
 	}
