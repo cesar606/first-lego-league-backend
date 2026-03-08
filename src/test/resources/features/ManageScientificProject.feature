@@ -29,7 +29,7 @@ Feature: Manage Scientific Project
         And The error code is "EDITION_REQUIRED"
         And The error message is "A scientific project must belong to an edition"
 
-    Scenario: Reject a scientific project with non-existent edition
+    Scenario: Reject a scientific project with invalid edition reference
         Given There is a registered user with username "user" and password "password" and email "user@sample.app"
         And I login as "user" with password "password"
         When I create a new scientific project with score 82 and comments "Unknown edition" and invalid edition for team "EditionGhosts"
@@ -45,7 +45,7 @@ Feature: Manage Scientific Project
         And The error code is "EDITION_TEAM_MISMATCH"
         And The error message is "The referenced team is not registered in the referenced edition"
 
-    Scenario: Reject a scientific project with non-existent team
+    Scenario: Reject a scientific project with invalid team reference
         Given There is a registered user with username "user" and password "password" and email "user@sample.app"
         And I login as "user" with password "password"
         When I create a new scientific project with score 84 and comments "Unknown team" and invalid team with valid edition
