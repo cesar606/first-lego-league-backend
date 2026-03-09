@@ -3,8 +3,6 @@ package cat.udl.eps.softarch.fll.controller;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import cat.udl.eps.softarch.fll.domain.Match;
-import cat.udl.eps.softarch.fll.domain.Team;
 import cat.udl.eps.softarch.fll.dto.MatchSearchItemResponse;
 import cat.udl.eps.softarch.fll.dto.MatchSearchPageResponse;
 import cat.udl.eps.softarch.fll.service.MatchSearchService;
