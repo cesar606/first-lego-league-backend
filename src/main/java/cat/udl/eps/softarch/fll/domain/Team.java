@@ -20,6 +20,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -69,6 +70,7 @@ public class Team extends UriEntity<String> {
 	private LocalDate inscriptionDate;
 
 	@OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Size(max = 10, message = "A team cannot have more than 10 members")
 	@ToString.Exclude
 	private List<TeamMember> members = new ArrayList<>();
 
@@ -91,6 +93,14 @@ public class Team extends UriEntity<String> {
 		member.setTeam(this);
 	}
 
+	@ManyToMany
+	@JoinTable(
+			name = "team_edition",
+			joinColumns = @JoinColumn(name = "team_name", referencedColumnName = "name"),
+			inverseJoinColumns = @JoinColumn(name = "edition_id"))
+	@JsonIdentityReference(alwaysAsId = true)
+	@ToString.Exclude
+	private Set<Edition> registeredEditions = new HashSet<>();
 
 	@ManyToMany
 	@JoinTable(
@@ -127,5 +137,31 @@ public class Team extends UriEntity<String> {
 		}
 		floaters.remove(floater);
 		floater.getAssistedTeams().remove(this);
+	}
+
+	public void registerEdition(Edition edition) {
+		if (edition != null) {
+			registeredEditions.add(edition);
+		}
+	}
+
+	public void addCoach(Coach coach) {
+		if (coach == null) {
+			throw new IllegalStateException("COACH_NOT_FOUND");
+		}
+		if (trainedBy.contains(coach)) {
+			throw new IllegalStateException("COACH_ALREADY_ASSIGNED");
+		}
+
+		if (trainedBy.size() >= 2) {
+			throw new IllegalStateException("MAX_COACHES_PER_TEAM_REACHED");
+		}
+
+		if (coach.getTeams().size() >= 2) {
+			throw new IllegalStateException("MAX_TEAMS_PER_COACH_REACHED");
+		}
+
+		trainedBy.add(coach);
+		coach.getTeams().add(this);
 	}
 }
