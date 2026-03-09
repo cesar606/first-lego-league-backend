@@ -69,4 +69,22 @@ class EditionLifecycleControllerTest {
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.error").value("EDITION_NOT_FOUND"));
 	}
+
+	@Test
+	void changeStateShouldReturnBadRequestWhenStateIsMissing() throws Exception {
+		mockMvc.perform(patch("/editions/5/state")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{}"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.error").value("INVALID_EDITION_STATE_REQUEST"));
+	}
+
+	@Test
+	void changeStateShouldReturnBadRequestWhenStateIsInvalid() throws Exception {
+		mockMvc.perform(patch("/editions/5/state")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"state\":\"INVALID\"}"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.error").value("INVALID_EDITION_STATE_REQUEST"));
+	}
 }

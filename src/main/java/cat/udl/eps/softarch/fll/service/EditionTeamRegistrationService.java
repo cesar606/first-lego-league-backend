@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import cat.udl.eps.softarch.fll.domain.Edition;
 import cat.udl.eps.softarch.fll.domain.EditionOperation;
 import cat.udl.eps.softarch.fll.domain.Team;
+import cat.udl.eps.softarch.fll.exception.EditionLifecycleException;
 import cat.udl.eps.softarch.fll.exception.EditionTeamRegistrationException;
 import cat.udl.eps.softarch.fll.repository.EditionRepository;
 import cat.udl.eps.softarch.fll.repository.TeamRepository;
@@ -30,7 +31,11 @@ public class EditionTeamRegistrationService {
 				.orElseThrow(() -> new EditionTeamRegistrationException(
 						"EDITION_NOT_FOUND", "Edition with id " + editionId + " not found"));
 
-		editionLifecycleService.assertOperationAllowed(edition, EditionOperation.TEAM_REGISTRATION);
+		try {
+			editionLifecycleService.assertOperationAllowed(edition, EditionOperation.TEAM_REGISTRATION);
+		} catch (EditionLifecycleException exception) {
+			throw new EditionTeamRegistrationException(exception.getError(), exception.getMessage());
+		}
 
 		Team team = teamRepository.findById(teamId)
 				.orElseThrow(() -> new EditionTeamRegistrationException(
