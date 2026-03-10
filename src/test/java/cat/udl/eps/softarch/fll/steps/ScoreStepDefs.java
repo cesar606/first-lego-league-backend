@@ -9,9 +9,11 @@ import java.util.Map;
 import java.util.UUID;
 import org.springframework.http.MediaType;
 import cat.udl.eps.softarch.fll.domain.Match;
+import cat.udl.eps.softarch.fll.domain.MatchResult;
 import cat.udl.eps.softarch.fll.domain.Round;
 import cat.udl.eps.softarch.fll.domain.Team;
 import cat.udl.eps.softarch.fll.repository.MatchRepository;
+import cat.udl.eps.softarch.fll.repository.MatchResultRepository;
 import cat.udl.eps.softarch.fll.repository.RoundRepository;
 import cat.udl.eps.softarch.fll.repository.TeamRepository;
 import io.cucumber.java.en.Given;
@@ -23,6 +25,7 @@ public class ScoreStepDefs {
 	private final StepDefs stepDefs;
 	private final RoundRepository roundRepository;
 	private final MatchRepository matchRepository;
+	private final MatchResultRepository matchResultRepository;
 	private final TeamRepository teamRepository;
 
 	private Long roundId;
@@ -37,16 +40,17 @@ public class ScoreStepDefs {
 			StepDefs stepDefs,
 			RoundRepository roundRepository,
 			MatchRepository matchRepository,
-			TeamRepository teamRepository
-	) {
+			MatchResultRepository matchResultRepository,
+			TeamRepository teamRepository) {
 		this.stepDefs = stepDefs;
 		this.roundRepository = roundRepository;
 		this.matchRepository = matchRepository;
+		this.matchResultRepository = matchResultRepository;
 		this.teamRepository = teamRepository;
 	}
 
 	@Given("The score dependencies exist")
-	public void theScoreDependenciesExist() throws Exception {
+	public void theScoreDependenciesExist() {
 		String suffix = UUID.randomUUID().toString().substring(0, 8);
 		Round round = createRound();
 
@@ -59,41 +63,14 @@ public class ScoreStepDefs {
 		nonParticipatingTeamUri = createTeam("TeamB-" + suffix);
 		teamUriByName.put("TeamB", nonParticipatingTeamUri);
 
-		Match match = new Match();
-		match.setRound(round);
-		match = matchRepository.save(match);
-		matchUri = "http://localhost/matches/" + match.getId();
-
-		JSONObject matchResultJson = new JSONObject();
-		matchResultJson.put("score", 0);
-		matchResultJson.put("team", participatingTeamUri);
-		matchResultJson.put("match", matchUri);
-
-		var mrRes = stepDefs.mockMvc.perform(
-						post("/matchResults")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(matchResultJson.toString())
-								.characterEncoding(StandardCharsets.UTF_8)
-								.with(AuthenticationStepDefs.authenticate()))
-				.andReturn()
-				.getResponse();
-
-		if (mrRes.getStatus() != 201) {
-			throw new RuntimeException(
-					"ERROR CREATING MATCH RESULT. Status: "
-							+ mrRes.getStatus()
-							+ " Body: "
-							+ mrRes.getContentAsString()
-			);
-		}
+		createMatchResult(round, participatingTeamUri, 0);
 	}
 
 	@Given("a round exists with id {int} and a team {string} participates in round {int}")
 	public void aRoundExistsAndATeamParticipatesInRound(
 			int ignoredRoundId,
 			String teamName,
-			int ignoredRoundIdAgain
-	) throws Exception {
+			int ignoredRoundIdAgain) {
 		teamUriByName.clear();
 
 		Round round = createRound();
@@ -152,7 +129,8 @@ public class ScoreStepDefs {
 	}
 
 	@When("I submit {int} points for team {string} in round {int}")
-	public void iSubmitPointsForTeamInRound(int points, String teamReference, int ignoredRoundId) throws Exception {
+	public void iSubmitPointsForTeamInRound(int points, String teamReference, int roundIdParam) throws Exception {
+		this.roundScoresUrl = "/rounds/" + roundIdParam + "/scores";
 		String teamUri = resolveTeamUri(teamReference);
 
 		JSONObject payload = new JSONObject();
@@ -177,7 +155,8 @@ public class ScoreStepDefs {
 	}
 
 	@When("I request the scores for round {int}")
-	public void iRequestTheScoresForRound(int ignoredRoundId) throws Exception {
+	public void iRequestTheScoresForRound(int roundIdParam) throws Exception {
+		this.roundScoresUrl = "/rounds/" + roundIdParam + "/scores";
 		iRequestTheScoresForTheRound();
 	}
 
@@ -201,44 +180,51 @@ public class ScoreStepDefs {
 		return "/teams/" + saved.getId();
 	}
 
-	private void createMatchResult(Round round, String teamUri, int initialScore) throws Exception {
+	private void createMatchResult(Round round, String teamUri, int initialScore) {
 		Match match = new Match();
 		match.setRound(round);
 		match = matchRepository.save(match);
 		matchUri = "http://localhost/matches/" + match.getId();
 
-		JSONObject matchResultJson = new JSONObject();
-		matchResultJson.put("score", initialScore);
-		matchResultJson.put("team", teamUri);
-		matchResultJson.put("match", matchUri);
+		String teamId = extractTeamId(teamUri);
+		Team team = teamRepository.findById(teamId)
+				.orElseThrow(() -> new RuntimeException("TEAM NOT FOUND: " + teamId));
 
-		var mrRes = stepDefs.mockMvc.perform(
-						post("/matchResults")
-								.contentType(MediaType.APPLICATION_JSON)
-								.content(matchResultJson.toString())
-								.characterEncoding(StandardCharsets.UTF_8)
-								.with(AuthenticationStepDefs.authenticate()))
-				.andReturn()
-				.getResponse();
+		MatchResult matchResult = new MatchResult();
+		matchResult.setScore(initialScore);
+		matchResult.setTeam(team);
+		matchResult.setMatch(match);
 
-		if (mrRes.getStatus() != 201) {
-			throw new RuntimeException(
-					"ERROR CREATING MATCH RESULT. Status: "
-							+ mrRes.getStatus()
-							+ " Body: "
-							+ mrRes.getContentAsString()
-			);
-		}
+		matchResultRepository.save(matchResult);
 	}
 
 	private String resolveTeamUri(String teamReference) {
+		String normalizedReference = teamReference;
+
+		if (teamUriByName.containsKey(teamReference)) {
+			return teamUriByName.get(teamReference);
+		}
+
 		if (teamReference.startsWith("/teams/")) {
 			String alias = teamReference.substring("/teams/".length());
 			String mappedUri = teamUriByName.get(alias);
 			if (mappedUri != null) {
 				return mappedUri;
 			}
+			normalizedReference = alias;
 		}
+
+		String mappedUri = teamUriByName.get(normalizedReference);
+		if (mappedUri != null) {
+			return mappedUri;
+		}
+
 		return teamReference;
+	}
+
+	private String extractTeamId(String teamUri) {
+		String trimmed = teamUri.trim();
+		int lastSlash = trimmed.lastIndexOf('/');
+		return lastSlash >= 0 ? trimmed.substring(lastSlash + 1) : trimmed;
 	}
 }

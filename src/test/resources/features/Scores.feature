@@ -42,3 +42,9 @@ Feature: Manage Round Scores
     Then The response code is 201
     When I request the scores for round 1
     Then The response code is 200
+
+  Scenario: List scores for a non-existent round returns 404
+    Given There is a registered user with username "referee", password "password", email "referee@test.com" and roles "ROLE_USER,ROLE_REFEREE"
+    And I login as "referee" with password "password"
+    When I request the scores for round 999999
+    Then The response code is 404

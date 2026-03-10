@@ -35,7 +35,8 @@ public class RoundScoreController {
 			RoundRepository roundRepository,
 			TeamRepository teamRepository,
 			MatchResultRepository matchResultRepository,
-			ScoreRepository scoreRepository) {
+			ScoreRepository scoreRepository
+	) {
 		this.roundRepository = roundRepository;
 		this.teamRepository = teamRepository;
 		this.matchResultRepository = matchResultRepository;
@@ -44,25 +45,28 @@ public class RoundScoreController {
 
 	@GetMapping("/{id}/scores")
 	public ResponseEntity<List<Score>> listScores(@PathVariable("id") Long roundId) {
-		if (!roundRepository.existsById(roundId)) {
+		if (roundRepository.findById(roundId).isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
-
-		List<Score> scores = scoreRepository.findByRound_Id(roundId);
-		return ResponseEntity.ok(scores);
+		return ResponseEntity.ok(scoreRepository.findByRound_Id(roundId));
 	}
 
 	@PostMapping("/{id}/scores")
 	@PreAuthorize("hasRole('REFEREE')")
-	public ResponseEntity<?> createScore(@PathVariable("id") Long roundId,
-			@Valid @RequestBody CreateScoreRequest body) {
-
+	public ResponseEntity<?> createScore(
+			@PathVariable("id") Long roundId,
+			@Valid @RequestBody CreateScoreRequest body
+	) {
 		Round round = roundRepository.findById(roundId).orElse(null);
 		if (round == null) {
 			return ResponseEntity.notFound().build();
 		}
 
 		String teamId = extractTeamId(body.getTeam());
+		if (teamId == null || teamId.isBlank()) {
+			return ResponseEntity.badRequest().body("Team is mandatory");
+		}
+
 		Team team = teamRepository.findById(teamId).orElse(null);
 		if (team == null) {
 			return ResponseEntity.badRequest().body("Team does not exist");
@@ -94,8 +98,9 @@ public class RoundScoreController {
 
 	private String extractTeamId(String teamUri) {
 		if (teamUri == null) {
-			return null;
+			return "";
 		}
+
 		String trimmed = teamUri.trim();
 		int lastSlash = trimmed.lastIndexOf('/');
 		return lastSlash >= 0 ? trimmed.substring(lastSlash + 1) : trimmed;
@@ -103,6 +108,7 @@ public class RoundScoreController {
 
 	@Data
 	public static class CreateScoreRequest {
+
 		@NotNull
 		private String team;
 
