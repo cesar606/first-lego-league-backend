@@ -1,7 +1,6 @@
 package cat.udl.eps.softarch.fll.steps;
 
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,9 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.http.MediaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import cat.udl.eps.softarch.fll.domain.Edition;
 import cat.udl.eps.softarch.fll.domain.Round;
 import cat.udl.eps.softarch.fll.repository.EditionRepository;
@@ -50,8 +48,8 @@ public class RoundSearchByEditionStepDefs {
 				.andExpect(status().isCreated())
 				.andReturn().getResponse().getHeader("Location");
 		if (location == null) {
-			            throw new IllegalStateException("Expected Location header after edition creation");
-	    }
+			throw new IllegalStateException("Expected Location header after edition creation");
+		}
 		currentEditionId = Long.parseLong(location.substring(location.lastIndexOf('/') + 1));
 	}
 
@@ -78,10 +76,11 @@ public class RoundSearchByEditionStepDefs {
 	@And("^The round search response should contain (\\d+) rounds?$")
 	public void theRoundSearchResponseShouldContainCount(int expectedCount) throws Exception {
 		String responseBody = stepDefs.result.andReturn().getResponse().getContentAsString();
-		    JsonNode root = stepDefs.mapper.readTree(responseBody);
-		    JsonNode rounds = root.path("_embedded").path("rounds");
-		    int actualCount = rounds.isArray() ? rounds.size() : 0;
-		    assertEquals(expectedCount, actualCount);	}
+			JsonNode root = stepDefs.mapper.readTree(responseBody);
+			JsonNode rounds = root.path("_embedded").path("rounds");
+			int actualCount = rounds.isArray() ? rounds.size() : 0;
+			assertEquals(expectedCount, actualCount);
+	}
 
 	@And("The round search response should include round with number {int}")
 	public void theRoundSearchResponseShouldIncludeRoundWithNumber(int number) throws Exception {

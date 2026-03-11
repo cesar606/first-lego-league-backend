@@ -1,5 +1,12 @@
 package cat.udl.eps.softarch.fll.steps;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import java.util.UUID;
+import org.springframework.http.MediaType;
 import cat.udl.eps.softarch.fll.domain.Edition;
 import cat.udl.eps.softarch.fll.domain.Floater;
 import cat.udl.eps.softarch.fll.domain.Judge;
@@ -11,13 +18,6 @@ import cat.udl.eps.softarch.fll.repository.RefereeRepository;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
-import org.springframework.http.MediaType;
-import java.util.UUID;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.not;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 public class EditionVolunteerStepDefs {
 
@@ -47,8 +47,8 @@ public class EditionVolunteerStepDefs {
 
 	@Given("an edition volunteer overview dataset exists")
 	public void anEditionVolunteerOverviewDatasetExists() {
-		Edition targetEdition = createEdition("Target venue", "Target edition");
-		Edition otherEdition = createEdition("Other venue", "Other edition");
+		final Edition targetEdition = createEdition("Target venue", "Target edition");
+		final Edition otherEdition = createEdition("Other venue", "Other edition");
 		targetEditionId = targetEdition.getId();
 
 		String suffix = UUID.randomUUID().toString().substring(0, 8);
@@ -61,7 +61,8 @@ public class EditionVolunteerStepDefs {
 		targetJudge.setEdition(targetEdition);
 		judgeRepository.save(targetJudge);
 
-		Floater targetFloater = Floater.create("Target Floater " + suffix, "target.floater." + suffix + "@example.com", "333333333", "TARGET-" + suffix);
+		Floater targetFloater = Floater.create("Target Floater " + suffix, "target.floater." + suffix + "@example.com",
+				"333333333", "TARGET-" + suffix);
 		targetFloater.setEdition(targetEdition);
 		floaterRepository.save(targetFloater);
 

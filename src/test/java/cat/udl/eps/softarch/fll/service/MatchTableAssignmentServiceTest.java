@@ -117,7 +117,7 @@ class MatchTableAssignmentServiceTest {
 
 		ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> service.assignTable(10L, "Table-1"));
 
-		assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, ex.getStatusCode());
+		assertEquals(HttpStatus.UNPROCESSABLE_CONTENT, ex.getStatusCode());
 		assertEquals("Match is missing start time", ex.getReason());
 	}
 
@@ -132,7 +132,7 @@ class MatchTableAssignmentServiceTest {
 
 		ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> service.assignTable(10L, "Table-1"));
 
-		assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, ex.getStatusCode());
+		assertEquals(HttpStatus.UNPROCESSABLE_CONTENT, ex.getStatusCode());
 		assertEquals("Match is missing end time", ex.getReason());
 	}
 
@@ -145,7 +145,7 @@ class MatchTableAssignmentServiceTest {
 
 		ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> service.assignTable(10L, "Table-1"));
 
-		assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, ex.getStatusCode());
+		assertEquals(HttpStatus.UNPROCESSABLE_CONTENT, ex.getStatusCode());
 		assertEquals("Match end time must be after start time", ex.getReason());
 	}
 

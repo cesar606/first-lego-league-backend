@@ -1,24 +1,23 @@
 package cat.udl.eps.softarch.fll.service;
 
-import cat.udl.eps.softarch.fll.domain.CompetitionTable;
-import cat.udl.eps.softarch.fll.domain.Match;
-import cat.udl.eps.softarch.fll.exception.MatchScheduleErrorCode;
-import cat.udl.eps.softarch.fll.exception.MatchScheduleException;
-import cat.udl.eps.softarch.fll.repository.MatchRepository;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import cat.udl.eps.softarch.fll.domain.CompetitionTable;
+import cat.udl.eps.softarch.fll.domain.Match;
+import cat.udl.eps.softarch.fll.exception.MatchScheduleErrorCode;
+import cat.udl.eps.softarch.fll.exception.MatchScheduleException;
+import cat.udl.eps.softarch.fll.repository.MatchRepository;
 
 class MatchScheduleValidationServiceTest {
 

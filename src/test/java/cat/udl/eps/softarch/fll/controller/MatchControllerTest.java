@@ -73,11 +73,11 @@ class MatchControllerTest {
 	}
 
 	@Test
-	void assignTableReturnsUnprocessableEntityWhenBodyInvalid() throws Exception {
+	void assignTableReturnsUnprocessableContentWhenBodyInvalid() throws Exception {
 		mockMvc.perform(post("/matches/15/assign-table")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("{\"tableIdentifier\":\"\"}"))
-				.andExpect(status().isUnprocessableEntity())
+				.andExpect(status().isUnprocessableContent())
 				.andExpect(jsonPath("$.error").value("VALIDATION_ERROR"))
 				.andExpect(jsonPath("$.message").isNotEmpty())
 				.andExpect(jsonPath("$.timestamp").isNotEmpty())

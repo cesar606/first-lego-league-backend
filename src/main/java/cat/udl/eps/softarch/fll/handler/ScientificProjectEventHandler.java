@@ -10,7 +10,7 @@ import cat.udl.eps.softarch.fll.repository.EditionRepository;
 import cat.udl.eps.softarch.fll.repository.TeamRepository;
 
 @Component
-@RepositoryEventHandler(ScientificProject.class)
+@RepositoryEventHandler
 public class ScientificProjectEventHandler {
 
 	private final TeamRepository teamRepository;

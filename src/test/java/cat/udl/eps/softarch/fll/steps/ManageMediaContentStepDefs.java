@@ -1,13 +1,5 @@
 package cat.udl.eps.softarch.fll.steps;
 
-import cat.udl.eps.softarch.fll.domain.MediaContent;
-import cat.udl.eps.softarch.fll.repository.MediaContentRepository;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.When;
-import org.springframework.http.MediaType;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,6 +8,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import org.springframework.http.MediaType;
+import cat.udl.eps.softarch.fll.domain.MediaContent;
+import cat.udl.eps.softarch.fll.repository.MediaContentRepository;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.When;
 
 public class ManageMediaContentStepDefs {
 	private final StepDefs stepDefs;

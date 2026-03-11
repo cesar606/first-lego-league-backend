@@ -140,7 +140,7 @@ public class ManageScientificProjectStepDefs {
 		teamRepository.save(team);
 	}
 
-	private void captureLatestProjectUriIfCreated() throws Exception {
+	private void captureLatestProjectUriIfCreated() {
 		if (stepDefs.result.andReturn().getResponse().getStatus() == 201) {
 			latestScientificProjectUri = stepDefs.result.andReturn().getResponse().getHeader("Location");
 		}

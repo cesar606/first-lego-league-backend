@@ -3,10 +3,6 @@ package cat.udl.eps.softarch.fll.controller;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import cat.udl.eps.softarch.fll.dto.MatchSearchItemResponse;
-import cat.udl.eps.softarch.fll.dto.MatchSearchPageResponse;
-import cat.udl.eps.softarch.fll.service.MatchSearchService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,6 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import cat.udl.eps.softarch.fll.dto.MatchSearchItemResponse;
+import cat.udl.eps.softarch.fll.dto.MatchSearchPageResponse;
+import cat.udl.eps.softarch.fll.service.MatchSearchService;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/matches")
@@ -48,7 +48,7 @@ public class MatchSearchController {
 			return ResponseEntity.ok(response);
 
 		} catch (IllegalArgumentException ex) {
-			return ResponseEntity.unprocessableEntity()
+			return ResponseEntity.unprocessableContent()
 				.body(Map.of(
 					"errorCode", ex.getMessage(),
 					"message", "Start time must not be after end time",

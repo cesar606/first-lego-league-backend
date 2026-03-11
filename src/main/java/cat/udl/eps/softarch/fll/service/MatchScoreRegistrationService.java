@@ -1,16 +1,16 @@
 package cat.udl.eps.softarch.fll.service;
 
+import java.util.List;
+import java.util.Map;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import cat.udl.eps.softarch.fll.domain.Match;
 import cat.udl.eps.softarch.fll.domain.MatchResult;
 import cat.udl.eps.softarch.fll.domain.Team;
 import cat.udl.eps.softarch.fll.repository.MatchRepository;
 import cat.udl.eps.softarch.fll.repository.MatchResultRepository;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class MatchScoreRegistrationService {
@@ -137,8 +137,8 @@ public class MatchScoreRegistrationService {
 		INVALID_MATCH_STATE(HttpStatus.CONFLICT),
 		MATCH_NOT_FINISHED(HttpStatus.CONFLICT),
 		RESULT_ALREADY_EXISTS(HttpStatus.CONFLICT),
-		INVALID_SCORE(HttpStatus.UNPROCESSABLE_ENTITY),
-		TEAM_MISMATCH(HttpStatus.UNPROCESSABLE_ENTITY);
+		INVALID_SCORE(HttpStatus.UNPROCESSABLE_CONTENT),
+		TEAM_MISMATCH(HttpStatus.UNPROCESSABLE_CONTENT);
 
 		private final HttpStatus status;
 
