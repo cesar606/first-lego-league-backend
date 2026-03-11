@@ -12,5 +12,9 @@ import cat.udl.eps.softarch.fll.domain.ScientificProject;
 public interface ScientificProjectRepository extends CrudRepository<ScientificProject, Long>, PagingAndSortingRepository<ScientificProject, Long> {
 
 	List<ScientificProject> findByScoreGreaterThanEqual(@Param("minScore") Integer minScore);
+
+	List<ScientificProject> findByTeamName(@Param("teamName") String teamName);
+
+	List<ScientificProject> findByEditionId(@Param("editionId") Long editionId);
 }
 
