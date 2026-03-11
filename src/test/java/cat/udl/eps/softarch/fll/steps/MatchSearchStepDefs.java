@@ -26,7 +26,8 @@ public class MatchSearchStepDefs {
 
 	private Long currentRoundId;
 
-	public MatchSearchStepDefs(StepDefs stepDefs, MatchRepository matchRepository, RoundRepository roundRepository, CompetitionTableRepository tableRepository) {
+	public MatchSearchStepDefs(StepDefs stepDefs, MatchRepository matchRepository,
+			RoundRepository roundRepository, CompetitionTableRepository tableRepository) {
 		this.stepDefs = stepDefs;
 		this.matchRepository = matchRepository;
 		this.roundRepository = roundRepository;
