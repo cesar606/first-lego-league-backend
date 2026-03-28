@@ -1,7 +1,12 @@
 package cat.udl.eps.softarch.fll.domain;
 
-import cat.udl.eps.softarch.fll.domain.volunteer.Floater;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import cat.udl.eps.softarch.fll.domain.volunteer.Floater;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,17 +22,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -64,8 +64,8 @@ public class Team extends UriEntity<String> {
 	private List<TeamMember> members = new ArrayList<>();
 	@ManyToMany
 	@JoinTable(
-		name = "team_edition",
-		joinColumns = @JoinColumn(name = "team_name", referencedColumnName = "name"),
+		name = "edition_teams",
+		joinColumns = @JoinColumn(name = "team_name"),
 		inverseJoinColumns = @JoinColumn(name = "edition_id"))
 	@JsonIdentityReference(alwaysAsId = true)
 	@ToString.Exclude
