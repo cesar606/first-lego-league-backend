@@ -1,16 +1,5 @@
 package cat.udl.eps.softarch.fll.controller.edition;
 
-import java.util.Arrays;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import cat.udl.eps.softarch.fll.controller.dto.ApiErrorResponse;
 import cat.udl.eps.softarch.fll.domain.EditionState;
 import cat.udl.eps.softarch.fll.exception.EditionLifecycleException;
@@ -18,6 +7,17 @@ import cat.udl.eps.softarch.fll.service.EditionLifecycleService;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.Arrays;
 
 @RestController
 @Tag(name = "Edition Lifecycle", description = "Custom endpoint to transition edition lifecycle state")
@@ -89,7 +89,8 @@ public class EditionLifecycleController {
 	public record ChangeEditionStateRequest(EditionState state) {
 	}
 
-	public record ChangeEditionStateResponse(Long editionId, EditionState previousState, EditionState newState,
-	                                         String status) {
+	public record ChangeEditionStateResponse(
+		Long editionId, EditionState previousState, EditionState newState,
+		String status) {
 	}
 }
