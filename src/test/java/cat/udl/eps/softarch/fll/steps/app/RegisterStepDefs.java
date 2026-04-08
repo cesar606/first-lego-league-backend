@@ -38,6 +38,7 @@ public class RegisterStepDefs {
 			user.setId(username);
 			user.setPassword(password);
 			user.encodePassword();
+			user.setRoles("ROLE_USER");
 			userRepository.save(user);
 		}
 	}
