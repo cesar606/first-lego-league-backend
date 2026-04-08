@@ -43,7 +43,7 @@ public class User extends UriEntity<String> implements UserDetails {
 
 	@NotBlank
 	@Column(nullable = false)
-	private String roles = "ROLE_USER";
+	private String roles = "ROLE_ADMIN";
 
 	public static User create(String id, String email, String password) {
 		DomainValidation.requireNonBlank(id, "id");
