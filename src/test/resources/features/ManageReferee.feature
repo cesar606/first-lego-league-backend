@@ -1,7 +1,8 @@
 Feature: Manage Referee REST API
 
   Background:
-    Given I login as "admin" with password "password"
+    Given There is a registered user with username "admin", password "password", email "admin@sample.app" and roles "ROLE_ADMIN"
+    And I login as "admin" with password "password"
     And the volunteer system is empty
 
   Scenario: Create a referee

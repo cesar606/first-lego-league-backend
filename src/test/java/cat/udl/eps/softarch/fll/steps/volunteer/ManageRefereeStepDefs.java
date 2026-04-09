@@ -40,6 +40,7 @@ public class ManageRefereeStepDefs {
 
 		stepDefs.result = stepDefs.mockMvc.perform(post("/referees")
 			.contentType(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON)
 			.content(stepDefs.mapper.writeValueAsString(body))
 			.characterEncoding(StandardCharsets.UTF_8)
 			.with(AuthenticationStepDefs.authenticate()));
@@ -58,6 +59,7 @@ public class ManageRefereeStepDefs {
 	public void iRequestToRetrieveThatReferee() throws Exception {
 		validateUrlIsPresent();
 		stepDefs.result = stepDefs.mockMvc.perform(get(currentRefereeUrl)
+			.accept(MediaType.APPLICATION_JSON)
 			.with(AuthenticationStepDefs.authenticate()));
 	}
 
@@ -69,6 +71,7 @@ public class ManageRefereeStepDefs {
 
 		stepDefs.result = stepDefs.mockMvc.perform(patch(currentRefereeUrl)
 			.contentType(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON)
 			.content(stepDefs.mapper.writeValueAsString(body))
 			.characterEncoding(StandardCharsets.UTF_8)
 			.with(AuthenticationStepDefs.authenticate()));
@@ -78,6 +81,7 @@ public class ManageRefereeStepDefs {
 	public void iRequestToDeleteThatReferee() throws Exception {
 		validateUrlIsPresent();
 		stepDefs.result = stepDefs.mockMvc.perform(delete(currentRefereeUrl)
+			.accept(MediaType.APPLICATION_JSON)
 			.with(AuthenticationStepDefs.authenticate()));
 	}
 
@@ -105,8 +109,9 @@ public class ManageRefereeStepDefs {
 	private void saveUrlFromLocationHeader() {
 		MvcResult res = stepDefs.result.andReturn();
 		String location = res.getResponse().getHeader("Location");
-		if (location != null) {
-			currentRefereeUrl = location;
+		if (location == null) {
+			throw new IllegalStateException("Missing Location header after referee creation.");
 		}
+		currentRefereeUrl = location;
 	}
 }
