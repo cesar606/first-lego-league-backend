@@ -5,10 +5,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import cat.udl.eps.softarch.fll.controller.dto.LeaderboardPageResponse;
 import cat.udl.eps.softarch.fll.controller.ranking.dto.LeaderboardPageResponse;
-import cat.udl.eps.softarch.fll.service.LeaderboardService;
 import cat.udl.eps.softarch.fll.service.leaderboard.LeaderboardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

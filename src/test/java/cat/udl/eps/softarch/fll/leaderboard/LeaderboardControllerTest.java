@@ -5,9 +5,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -16,13 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.server.ResponseStatusException;
-
-import cat.udl.eps.softarch.fll.controller.dto.LeaderboardItemResponse;
-import cat.udl.eps.softarch.fll.controller.dto.LeaderboardPageResponse;
 import cat.udl.eps.softarch.fll.controller.ranking.LeaderboardController;
 import cat.udl.eps.softarch.fll.controller.ranking.dto.LeaderboardItemResponse;
 import cat.udl.eps.softarch.fll.controller.ranking.dto.LeaderboardPageResponse;
-import cat.udl.eps.softarch.fll.service.LeaderboardService;
 import cat.udl.eps.softarch.fll.service.leaderboard.LeaderboardService;
 
 class LeaderboardControllerTest {
