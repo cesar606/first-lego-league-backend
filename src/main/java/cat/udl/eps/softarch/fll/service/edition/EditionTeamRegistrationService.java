@@ -37,7 +37,7 @@ public class EditionTeamRegistrationService {
 			throw new EditionTeamRegistrationException(exception.getError(), exception.getMessage(), exception);
 		}
 
-		Team team = teamRepository.findById(teamId)
+		Team team = teamRepository.findByNameForUpdate(teamId)
 				.orElseThrow(() -> new EditionTeamRegistrationException(
 						"TEAM_NOT_FOUND", "Team with id " + teamId + " not found"));
 
