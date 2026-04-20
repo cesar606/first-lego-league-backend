@@ -1,4 +1,4 @@
-package cat.udl.eps.softarch.fll.domain;
+package cat.udl.eps.softarch.fll.domain.match;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;

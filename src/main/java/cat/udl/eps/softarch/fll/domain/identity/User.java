@@ -1,4 +1,4 @@
-package cat.udl.eps.softarch.fll.domain;
+package cat.udl.eps.softarch.fll.domain.identity;
 
 import java.util.Collection;
 import org.hibernate.validator.constraints.Length;
