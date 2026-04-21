@@ -1,4 +1,4 @@
-package cat.udl.eps.softarch.fll.domain;
+package cat.udl.eps.softarch.fll.domain.edition;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

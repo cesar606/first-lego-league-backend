@@ -1,4 +1,4 @@
-package cat.udl.eps.softarch.fll.domain;
+package cat.udl.eps.softarch.fll.domain.ranking;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.Entity;
@@ -43,9 +43,8 @@ public class Award extends UriEntity<Long> {
 	private Edition edition;
 
 	/**
-	 * The team that won this award. Must be a valid team.
+	 * The team that won this award. It can be initially empty until the award is assigned.
 	 */
-	@NotNull
 	@ManyToOne
 	@JsonIdentityReference(alwaysAsId = true)
 	private Team winner;
@@ -59,6 +58,16 @@ public class Award extends UriEntity<Long> {
 		award.name = name;
 		award.edition = edition;
 		award.winner = winner;
+		return award;
+	}
+
+	public static Award create(String name, Edition edition) {
+		DomainValidation.requireNonBlank(name, "name");
+		DomainValidation.requireNonNull(edition, "edition");
+
+		Award award = new Award();
+		award.name = name;
+		award.edition = edition;
 		return award;
 	}
 

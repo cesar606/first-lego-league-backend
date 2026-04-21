@@ -1,4 +1,4 @@
-package cat.udl.eps.softarch.fll.domain;
+package cat.udl.eps.softarch.fll.domain.team;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
