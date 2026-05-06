@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -53,6 +54,7 @@ class FloaterAssignmentServiceTest {
 		floater.setId(42L);
 
 		lenient().when(teamRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+		ReflectionTestUtils.setField(floaterAssignmentService, "entityManager", entityManager);
 	}
 
 	@Test
