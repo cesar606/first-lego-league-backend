@@ -10,14 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-
-import cat.udl.eps.softarch.fll.steps.app.AuthenticationStepDefs;
-import cat.udl.eps.softarch.fll.steps.app.StepDefs;
 import org.springframework.http.MediaType;
 import cat.udl.eps.softarch.fll.domain.edition.Edition;
 import cat.udl.eps.softarch.fll.domain.edition.Venue;
 import cat.udl.eps.softarch.fll.repository.edition.EditionRepository;
 import cat.udl.eps.softarch.fll.repository.edition.VenueRepository;
+import cat.udl.eps.softarch.fll.steps.app.AuthenticationStepDefs;
+import cat.udl.eps.softarch.fll.steps.app.StepDefs;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
@@ -83,6 +82,36 @@ public class ManageEditionStepDefs {
 					.accept(MediaType.APPLICATION_JSON)
 					.with(AuthenticationStepDefs.authenticate()))
 			.andDo(print());
+	}
+
+	@When("I create a new edition with year {int}, venueName {string} and description {string}")
+	public void iCreateANewEditionWithVenueName(int year, String venueName, String description) throws Exception {
+		stepDefs.result = stepDefs.mockMvc.perform(
+				post("/editions")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(stepDefs.mapper.writeValueAsString(
+						Map.of("year", year, "description", description, "venueName", venueName)))
+					.characterEncoding(StandardCharsets.UTF_8)
+					.accept(MediaType.APPLICATION_JSON)
+					.with(AuthenticationStepDefs.authenticate()))
+			.andDo(print());
+
+		editionUri = stepDefs.result.andReturn().getResponse().getHeader("Location");
+	}
+
+	@When("I create a new edition with year {int}, venueName {string}, venueCity {string} and description {string}")
+	public void iCreateANewEditionWithVenueNameAndCity(int year, String venueName, String venueCity, String description) throws Exception {
+		stepDefs.result = stepDefs.mockMvc.perform(
+				post("/editions")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(stepDefs.mapper.writeValueAsString(
+						Map.of("year", year, "description", description, "venueName", venueName, "venueCity", venueCity)))
+					.characterEncoding(StandardCharsets.UTF_8)
+					.accept(MediaType.APPLICATION_JSON)
+					.with(AuthenticationStepDefs.authenticate()))
+			.andDo(print());
+
+		editionUri = stepDefs.result.andReturn().getResponse().getHeader("Location");
 	}
 
 	@When("I update the edition venue to {string}")

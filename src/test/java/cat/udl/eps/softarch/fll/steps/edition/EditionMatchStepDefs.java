@@ -3,11 +3,11 @@ package cat.udl.eps.softarch.fll.steps.edition;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
+import org.springframework.http.MediaType;
+import com.jayway.jsonpath.JsonPath;
 import cat.udl.eps.softarch.fll.domain.edition.Edition;
 import cat.udl.eps.softarch.fll.domain.edition.Venue;
 import cat.udl.eps.softarch.fll.domain.match.CompetitionTable;
@@ -21,13 +21,11 @@ import cat.udl.eps.softarch.fll.repository.match.MatchRepository;
 import cat.udl.eps.softarch.fll.repository.match.RoundRepository;
 import cat.udl.eps.softarch.fll.repository.team.TeamRepository;
 import cat.udl.eps.softarch.fll.steps.app.StepDefs;
-import com.jayway.jsonpath.JsonPath;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.springframework.http.MediaType;
 
 public class EditionMatchStepDefs {
 

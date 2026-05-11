@@ -29,3 +29,14 @@ Feature: Manage Edition
     When I delete the edition
     Then The response code is 200
     And The edition has been deleted
+
+  Scenario: Create an edition using an existing venue name
+    Given There is a venue with name "ExistingVenue" and city "Madrid"
+    When I create a new edition with year 2026, venueName "ExistingVenue" and description "FLL Season 2026"
+    Then The response code is 201
+    And The edition has year 2026, venue "ExistingVenue" and description "FLL Season 2026"
+
+  Scenario: Create an edition using a new venue name and city
+    When I create a new edition with year 2026, venueName "NewVenue", venueCity "Girona" and description "FLL Season 2026"
+    Then The response code is 201
+    And The edition has year 2026, venue "NewVenue" and description "FLL Season 2026"

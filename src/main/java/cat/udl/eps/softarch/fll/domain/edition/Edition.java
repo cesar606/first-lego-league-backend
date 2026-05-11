@@ -1,5 +1,9 @@
 package cat.udl.eps.softarch.fll.domain.edition;
 
+import java.util.ArrayList;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import cat.udl.eps.softarch.fll.domain.DomainValidation;
 import cat.udl.eps.softarch.fll.domain.UriEntity;
 import cat.udl.eps.softarch.fll.domain.team.Team;
@@ -13,14 +17,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -56,6 +61,20 @@ public class Edition extends UriEntity<Long> {
 	@EqualsAndHashCode.Exclude
 	private List<Team> teams = new ArrayList<>();
 
+	@Transient
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	private String inputVenueName;
+
+	@Transient
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	private String inputVenueCity;
+
 	protected Edition() {
 	}
 
@@ -64,9 +83,29 @@ public class Edition extends UriEntity<Long> {
 		return venue != null ? venue.getName() : null;
 	}
 
+	@JsonProperty("venueName")
+	public void setVenueName(String venueName) {
+		this.inputVenueName = venueName;
+	}
+
 	@JsonProperty("venueCity")
 	public String getVenueCity() {
 		return venue != null ? venue.getCity() : null;
+	}
+
+	@JsonProperty("venueCity")
+	public void setVenueCity(String venueCity) {
+		this.inputVenueCity = venueCity;
+	}
+
+	@JsonIgnore
+	public String getInputVenueName() {
+		return inputVenueName;
+	}
+
+	@JsonIgnore
+	public String getInputVenueCity() {
+		return inputVenueCity;
 	}
 
 	public static Edition create(Integer year, Venue venue, String description) {
